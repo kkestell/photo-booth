@@ -35,9 +35,6 @@
 # (usually http://localhost:631 , Administration / Add Printer menu) while
 # mDNS service discovery is enabled.
 #
-PRINTER="Canon_SELPHY_CP1200"
-
-# End of configuration parameters.
 
 check="true"
 for ex in \
@@ -54,14 +51,6 @@ done
 if [ "${check}" = "false" ]
   then
     echo "Some utilities are missing"
-    exit 1
-fi
-
-lpq -P "${PRINTER}" >/dev/null 2>&1 || check="false"
-
-if [ "${check}" = "false" ]
-  then
-    echo "Can't check printer ${PRINTER} status"
     exit 1
 fi
 
@@ -93,7 +82,7 @@ if [ -f "${1}" ]
         -gravity center -extent "1760x1190" "${1}" png:- | \
     convert -page "+46+34" -background white -flatten \
         -extent "1872x1248" png:- -quality 97 jpg:- | \
-    lpr -o raw -P "${PRINTER}"
+    lp -
 
   else
     echo "No input file" 1>&2

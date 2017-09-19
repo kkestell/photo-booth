@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # print-selphy-postcard
-# 
+#
 # Print postcard-sized (148x100mm, 5.8 x 3.9in) images
 # on a Canon Selphy CP1200 and compatible photo printers
 #
@@ -14,12 +14,12 @@
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 2 of the License, or
 # (at your option) any later version.
-#  
+#
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
-#  
+#
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
@@ -35,10 +35,13 @@
 # (usually http://localhost:631 , Administration / Add Printer menu) while
 # mDNS service discovery is enabled.
 #
+PRINTER="Canon_SELPHY_CP1200"
+
+# End of configuration parameters.
 
 check="true"
 for ex in \
- identify convert grep tr head lpq lpr
+ identify convert grep tr head lp
   do
     loc=`which "${ex}"`
     if [ "${loc}" = "" ]
@@ -68,9 +71,9 @@ if [ -f "${1}" ]
     echo $(($(identify "${1}" | tr ' ' '\n' | \
               grep '^[0-9]\+x[0-9]\+$' | \
               head -n 1 | tr 'x' '-'))) | \
-    grep -q - 
+    grep -q -
       then
-        rotateopt="-rotate" 
+        rotateopt="-rotate"
         rot="90"
       else
         rotateopt=""
@@ -81,10 +84,10 @@ if [ -f "${1}" ]
         -filter Gaussian -resize "${imggeom}" \
         -gravity center -extent "1760x1190" "${1}" png:- | \
     convert -page "+46+34" -background white -flatten \
-        -extent "1872x1248" png:- -quality 97 jpg:- | \
+        -extent "1872x1248" png:- -quality 80 jpg:- | \
     lp -
 
   else
     echo "No input file" 1>&2
-    exit 1 
+    exit 1
 fi

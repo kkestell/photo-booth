@@ -34,6 +34,10 @@ Install the following packages:
 $ sudo apt install cups lpr git gphoto2 ruby ruby-dev libncurses5-dev
 ```
 
+## Enable SSH
+
+Use `$ sudo raspi-config` to enable SSH.
+
 ## Configure Printer
 
 ```

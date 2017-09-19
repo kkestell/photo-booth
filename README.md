@@ -47,6 +47,10 @@ $ sudo make install
 $ ldconfig
 ```
 
+## Enable SSH
+
+Use `$ sudo raspi-config` to enable SSH.
+
 ## Configure Printer
 
 ```

@@ -31,7 +31,20 @@ ExecStart=-/sbin/agetty --noclear -a pi %I $TERM
 Install the following packages:
 
 ```
-$ sudo apt install cups lpr git gphoto2 ruby ruby-dev libncurses5-dev
+$ sudo apt install autotools cups git gphoto2 libexif-dev libjpeg-dev libtool ruby ruby-dev
+```
+
+## Install `epeg`
+
+```
+$ cd ~/
+$ sudo apt install
+$ git clone https://github.com/mattes/epeg.git
+$ cd epeg
+$ sh autogen.sh
+$ make
+$ sudo make install
+$ ldconfig
 ```
 
 ## Enable SSH
@@ -58,6 +71,7 @@ On the final screen, default options, set Borderless to Yes and click Set Defaul
 ## Install
 
 ```
+$ cd ~/
 $ git clone https://github.com/kkestell/photo-booth.git
 $ cd photo-booth
 $ bundle install

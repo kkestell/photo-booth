@@ -1,3 +1,7 @@
+require 'rubyserial'
+
+$serial = Serial.new('/dev/cu.wchusbserial1410')
+
 def generate_filename
   "#{Time.now.to_i}.jpg"
 end
@@ -25,6 +29,8 @@ end
 
 def take_photos
   3.times do
+    $serial.write('0')
+    sleep(3)
     take_photo
   end
 end

@@ -1,6 +1,6 @@
 require 'rubyserial'
 
-$serial = Serial.new(`ls /dev | grep ttyUSB`.strip)
+$serial = Serial.new("/dev/#{`ls /dev | grep ttyUSB`.strip}")
 
 def generate_filename
   "#{Time.now.to_i}.jpg"

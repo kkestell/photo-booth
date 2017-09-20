@@ -36,6 +36,5 @@ def take_photos
 end
 
 loop do
-  command = gets.strip
-  take_photos if command == 'capture'
+  take_photos if $serial.read == '0'
 end

@@ -1,9 +1,15 @@
 #include <Adafruit_NeoPixel.h>
 
+#define PIN_BUTTON_CAPTURE 4
+
 Adafruit_NeoPixel pixels = Adafruit_NeoPixel(60, 3, NEO_GRB + NEO_KHZ800);
 
 void setup() {
+  pinMode(PIN_BUTTON_CAPTURE, INPUT);
+  digitalWrite(PIN_BUTTON_CAPTURE, HIGH);
+
   Serial.begin(9600);
+
   pixels.begin();
   clear();
 }
@@ -109,7 +115,14 @@ void breathe() {
 }
 
 void loop() {
-  if (Serial.available() > 0) {
+  int buttonState = 0;
+  buttonState = digitalRead(PIN_BUTTON_CAPTURE);
+  if (digitalRead(PIN_BUTTON_CAPTURE) == LOW) {
+    Serial.write("0");
+    delay(1000);
+  }
+
+  if (Serial.available() > 0) {  
     int command = Serial.read() - 48;
     if(command == 0)
       countdown();

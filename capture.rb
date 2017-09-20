@@ -36,5 +36,5 @@ def take_photos
 end
 
 loop do
-  take_photos if $serial.read == '0'
+  take_photos if $serial.read(1) == '0'
 end

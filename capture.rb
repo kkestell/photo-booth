@@ -1,5 +1,8 @@
 require 'rubyserial'
 
+PUBLIC = File.join(File.dirname(__FILE__), 'public')
+PHOTOS = File.join(File.dirname(__FILE__), 'photos')
+
 $serial = Serial.new("/dev/#{`ls /dev | grep ttyUSB`.strip}")
 
 def generate_filename
@@ -7,11 +10,11 @@ def generate_filename
 end
 
 def gphoto_command(filename)
-  "gphoto2 --capture-image-and-download --keep --keep-raw --filename photos/#{filename}"
+  "gphoto2 --capture-image-and-download --keep --keep-raw --filename #{File.join(PHOTOS, filename)}"
 end
 
 def thumbnail_command(filename, output, width, quality)
-  "epeg -w #{width} -p -q #{quality} photos/#{filename} public/#{output}"
+  "epeg -w #{width} -p -q #{quality} #{File.join(PHOTOS, filename)} #{File.join(PUBLIC, output)}"
 end
 
 def command(cmd, async: true)

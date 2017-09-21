@@ -106,3 +106,48 @@ $ git clone https://github.com/kkestell/photo-booth.git
 $ cd photo-booth
 $ bundle install
 ```
+
+## Configure Services
+
+```
+$ sudo nano /lib/systemd/system/photo-booth-server.service
+```
+
+```
+[Unit]
+Description=Photo Booth Server
+After=multi-user.target
+
+[Service]
+Type=idle
+ExecStart=/usr/bin/ruby /home/pi/photo-booth/server.rb > /home/pi/photo-booth/logs/server.log 2>&1
+
+[Install]
+WantedBy=multi-user.target
+```
+
+```
+$ sudo nano /lib/systemd/system/photo-booth-capture.service
+```
+
+```
+[Unit]
+Description=Photo Booth Capture
+After=multi-user.target
+
+[Service]
+Type=idle
+ExecStart=/usr/bin/ruby /home/pi/photo-booth/capture.rb > /home/pi/photo-booth/logs/capture.log 2>&1
+
+[Install]
+WantedBy=multi-user.target
+```
+
+```
+$ sudo chmod 644 /lib/systemd/system/photo-booth-server.service
+$ sudo chmod 644 /lib/systemd/system/photo-booth-capture.service
+$ sudo systemctl daemon-reload
+$ sudo systemctl enable photo-booth-server.service
+$ sudo systemctl enable photo-booth-capture.service
+$ sudo reboot
+```

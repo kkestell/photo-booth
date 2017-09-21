@@ -1,8 +1,8 @@
 require 'json'
 require 'sinatra'
 
-PUBLIC = File.join(Dir.pwd, 'public')
-PHOTOS = File.join(Dir.pwd, 'photos')
+PUBLIC = File.join(File.dirname(__FILE__), 'public')
+PHOTOS = File.join(File.dirname(__FILE__), 'photos')
 
 set :bind, '0.0.0.0'
 
@@ -29,5 +29,5 @@ get '/photos/thumbnails/:filename' do
 end
 
 get '/photos/:filename/prints' do
-  `sh #{Dir.pwd}/print.sh #{File.join(PHOTOS, params['filename'])} &`
+  `sh #{File.dirname(__FILE__)}/print.sh #{File.join(PHOTOS, params['filename'])} &`
 end

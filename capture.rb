@@ -1,9 +1,12 @@
+#!/usr/bin/ruby
+
 require 'rubyserial'
 
 PUBLIC = File.join(File.dirname(__FILE__), 'public')
 PHOTOS = File.join(File.dirname(__FILE__), 'photos')
 
 $serial = Serial.new("/dev/#{`ls /dev | grep ttyUSB`.strip}")
+sleep(1)
 
 def generate_filename
   "#{Time.now.to_i}.jpg"
@@ -30,14 +33,14 @@ def take_photo
   command(thumbnail_command(filename, filename, 2560, 80))
 end
 
-def take_photos
-  3.times do
-    $serial.write('0')
-    sleep(3)
-    take_photo
-  end
-end
+$serial.write('0')
+sleep(10)
+take_photo
 
-loop do
-  take_photos if $serial.read(1) == '0'
-end
+$serial.write('1')
+sleep(3)
+take_photo
+
+$serial.write('1')
+sleep(3)
+take_photo

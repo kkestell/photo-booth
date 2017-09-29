@@ -1,3 +1,5 @@
+#!/usr/bin/ruby
+
 require 'json'
 require 'sinatra'
 
@@ -5,6 +7,10 @@ PUBLIC = File.join(File.dirname(__FILE__), 'public')
 PHOTOS = File.join(File.dirname(__FILE__), 'photos')
 
 set :bind, '0.0.0.0'
+
+post '/photos' do
+  `/usr/bin/ruby #{File.join(File.dirname(__FILE__), 'capture.rb')}`
+end
 
 get '/photos' do
   content_type :json

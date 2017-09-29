@@ -8,7 +8,7 @@ This guide assumes the following hardware:
 
 ## Operating System Installation
 
-Install Raspbian Lite on an SD card.
+Install Raspbian Lite on an SD card. You'll want to have your Pi plugged into a keyboard, monitor, and ethernet.
 
 Boot from the SD card and log in as `pi` / `raspberry`.
 
@@ -40,29 +40,29 @@ dns-nameservers 8.8.8.8
 iface default inet dhcp
 ```
 
-## Enable Auto-Login
+## Enable SSH and Raspberry Pi Camera
 
-Edit `/lib/systemd/system/getty@.service` and change:
+Use `$ sudo raspi-config` to enable SSH and the Raspberry Pi camera.
 
-```
-ExecStart=-/sbin/agetty --noclear %I $TERM
-```
+## Reboot and Connect via SSH
 
-to
+You should now be able to reboot your Raspberry Pi and log in via SSH, e.g.
 
 ```
-ExecStart=-/sbin/agetty --noclear -a pi %I $TERM
+$ ssh pi@10.0.0.2
 ```
+
+You should be able to perform the rest of this setup process via SSH.
 
 ## Install Dependencies
 
 Install the following packages:
 
 ```
-$ sudo apt install autotools cups git gphoto2 libexif-dev libjpeg-dev libtool ruby ruby-dev
+$ sudo apt install autotools cups git gphoto2 gstreamer1.0-tools libexif-dev libjpeg-dev libtool ruby ruby-dev
 ```
 
-## Install `epeg`
+### Compile and Install `epeg`
 
 ```
 $ cd ~/
@@ -75,10 +75,6 @@ $ sudo make install
 $ ldconfig
 ```
 
-## Enable SSH
-
-Use `$ sudo raspi-config` to enable SSH.
-
 ## Configure Printer
 
 ```
@@ -88,7 +84,7 @@ $ cupsctl --remote-admin
 
 Connect the printer via USB.
 
-Visit `https://192.168.0.104:631/admin/` in your browser (replacing the IP as necessary) and click "Add Printer". You should see the Selphy listed under Local Printers as "Canon SELPHY CP1200 (Canon SELPHY CP1200)". Select it and click Continue.
+Visit `https://10.0.0.2:631/admin/` in your browser (replacing the IP as necessary) and click "Add Printer". You should see the Selphy listed under Local Printers as "Canon SELPHY CP1200 (Canon SELPHY CP1200)". Select it and click Continue.
 
 On the following screen, accept the default options and press Continue again.
 
@@ -96,7 +92,7 @@ On the following screen, select the "Canon SELPHY DS910 - CUPS+Gutenprint v5.2.1
 
 On the final screen, default options, set Borderless to Yes and click Set Default Options.
 
-## Install
+## Install Photo Booth Software
 
 ```
 $ cd ~/
@@ -107,9 +103,15 @@ $ bundle install
 
 ## Configure Services
 
+### Server
+
+Create a new systemd service:
+
 ```
 $ sudo nano /lib/systemd/system/photo-booth-server.service
 ```
+
+And add the following:
 
 ```
 [Unit]
@@ -124,9 +126,21 @@ ExecStart=/usr/bin/ruby /home/pi/photo-booth/server.rb > /home/pi/photo-booth/lo
 WantedBy=multi-user.target
 ```
 
+Set permissions:
+
+```
+$ sudo chmod 644 /lib/systemd/system/photo-booth-server.service
+```
+
+### Preview Stream
+
+Create a new systemd service:
+
 ```
 $ sudo nano /lib/systemd/system/photo-booth-preview-stream.service
 ```
+
+And add the following:
 
 ```
 [Unit]
@@ -141,16 +155,23 @@ ExecStart=/bin/sh /home/pi/photo-booth/preview.sh > /home/pi/photo-booth/logs/pr
 WantedBy=multi-user.target
 ```
 
+Set permissions:
+
 ```
-$ sudo chmod 644 /lib/systemd/system/photo-booth-server.service
 $ sudo chmod 644 /lib/systemd/system/photo-booth-preview-stream.service
-$ sudo systemctl daemon-reload
-$ sudo systemctl enable photo-booth-server.service
-$ sudo systemctl enable photo-booth-preview-stream.service
-$ sudo reboot
 ```
 
-### Starting, Stopping, and Restarting Services
+### Register, Enable, and Start New Services
+
+```
+$ sudo systemctl daemon-reload
+$ sudo systemctl enable photo-booth-server
+$ sudo systemctl enable photo-booth-preview-stream
+$ sudo systemctl start photo-booth-server
+$ sudo systemctl start photo-preview-stream
+```
+
+#### Starting, Stopping, and Restarting Services
 
 ```
 $ sudo systemctl [start|stop|restart] [photo-booth-server|photo-booth-preview-stream]

@@ -22,22 +22,56 @@ $ sudo nano /etc/network/interfaces
 source-directory /etc/network/interfaces.d
 
 auto lo
+
 iface lo inet loopback
 
 auto eth0
-iface eth0 inet static
-  address 10.0.0.2
+iface eth0 inet dhcp
+
+iface wlan0 inet static
+  address 10.0.0.1
   netmask 255.0.0.0
+```
 
-allow-hotplug wlan0
-auto wlan0
-iface wlan0 inet dhcp
-  wpa-ssid "YOUR SSID"
-  wpa-psk "YOUR PASSWORD"
+### Configure HostAPD
 
-dns-nameservers 8.8.8.8
+Create `/etc/hostapd/hostapd.conf` with the following contents:
 
-iface default inet dhcp
+```
+interface=wlan0
+driver=nl80211
+ssid=Photo Booth
+hw_mode=n
+channel=6
+macaddr_acl=0
+auth_algs=1
+ignore_broadcast_ssid=0
+wpa=2
+wpa_passphrase=00000000
+wpa_key_mgmt=WPA-PSK
+rsn_pairwise=CCMP
+ieee80211n=1
+wmm_enabled=1
+ht_capab=[HT40][SHORT-GI-20][DSSS_CCK-40]
+```
+
+Edit the file `/etc/default/hostapd` and change the line:
+
+```
+#DAEMON_CONF=""
+```
+
+to
+
+```
+DAEMON_CONF="/etc/hostapd/hostapd.conf"
+```
+
+Finally, start HostAPD and configure it to start on boot:
+
+```
+$ sudo service hostapd start
+$ sudo update-rc.d hostapd enable
 ```
 
 ## Enable SSH and Raspberry Pi Camera
@@ -59,7 +93,7 @@ You should be able to perform the rest of this setup process via SSH.
 Install the following packages:
 
 ```
-$ sudo apt install autotools cups git gphoto2 gstreamer1.0-tools libexif-dev libjpeg-dev libtool ruby ruby-dev
+$ sudo apt install autotools cups git gphoto2 gstreamer1.0-tools hostapd libexif-dev libjpeg-dev libtool ruby ruby-dev
 ```
 
 ### Compile and Install `epeg`
@@ -168,7 +202,7 @@ $ sudo systemctl daemon-reload
 $ sudo systemctl enable photo-booth-server
 $ sudo systemctl enable photo-booth-preview-stream
 $ sudo systemctl start photo-booth-server
-$ sudo systemctl start photo-preview-stream
+$ sudo systemctl start photo-booth-preview-stream
 ```
 
 #### Starting, Stopping, and Restarting Services

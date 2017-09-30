@@ -1,24 +1,20 @@
 # Photo Booth
 
-Clone this repository to `~/` on your Raspberry Pi and follow the setup instructions in `/docs`.
+Clone this repository to `~/photo-booth` on your Raspberry Pi and follow the setup instructions in `/docs`.
 
 ## Included
 
 ### `capture.rb`
 
-TODO
-
-### `preview.sh`
-
-TODO
+Captures photos, enables/disables live video stream, and controls the status ring.
 
 ### `print.sh`
 
-TODO
+Prints photos.
 
 ### `server.rb`
 
-TODO
+Controls `capture.rb` and `print.sh`, and provides access to captured photos.
 
 ## See Also
 

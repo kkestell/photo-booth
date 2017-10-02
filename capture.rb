@@ -1,5 +1,3 @@
-#!/usr/bin/ruby
-
 require 'rubyserial'
 
 PUBLIC = File.join(File.dirname(__FILE__), 'public')
@@ -33,14 +31,19 @@ def take_photo
   command(thumbnail_command(filename, filename, 2560, 80))
 end
 
+command('timeout 60s raspivid -o - -b 600000 -g 10 -t 0 -n -w 640 -h 480 -fps 30 --flush | gst-launch-1.0 -v fdsrc ! h264parse ! rtph264pay config-interval=10 pt=96 ! udpsink host=10.0.0.2 port=5006')
+
+# Long countdown (10 seconds)
 $serial.write('0')
 sleep(10)
 take_photo
 
+# Short countdown
 $serial.write('1')
 sleep(3)
 take_photo
 
+# Short countdown
 $serial.write('1')
 sleep(3)
 take_photo

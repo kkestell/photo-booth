@@ -1,5 +1,3 @@
-#!/usr/bin/ruby
-
 require 'json'
 require 'sinatra'
 
@@ -7,6 +5,12 @@ PUBLIC = File.join(File.dirname(__FILE__), 'public')
 PHOTOS = File.join(File.dirname(__FILE__), 'photos')
 
 set :bind, '0.0.0.0'
+
+def command(cmd, async: true)
+  puts cmd
+  pid = spawn(cmd)
+  async ? Process.detach(pid) : Process.wait(pid)
+end
 
 post '/photos' do
   `/usr/bin/ruby #{File.join(File.dirname(__FILE__), 'capture.rb')}`
@@ -34,6 +38,6 @@ get '/photos/thumbnails/:filename' do
     disposition: 'inline'
 end
 
-get '/photos/:filename/prints' do
-  `sh #{File.dirname(__FILE__)}/print.sh #{File.join(PHOTOS, params['filename'])} &`
+post '/photos/:filename/prints' do
+  command("/bin/sh #{File.dirname(__FILE__)}/print.sh #{File.join(PHOTOS, params['filename'])}")
 end

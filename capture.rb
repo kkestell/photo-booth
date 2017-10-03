@@ -1,12 +1,25 @@
-#!/usr/bin/ruby
-
 require 'rubyserial'
 
+LOG = File.join(File.join(File.dirname(__FILE__), 'logs'), 'photo-booth.log')
 PUBLIC = File.join(File.dirname(__FILE__), 'public')
 PHOTOS = File.join(File.dirname(__FILE__), 'photos')
 
+puts 'Enumerating serial devices'
+
 $serial = Serial.new("/dev/#{`ls /dev | grep ttyUSB`.strip}")
 sleep(1)
+
+puts 'Serial communication initialized'
+
+def start_preview
+  cmd = 'raspivid -o - -i 10 -b 600000 -t 0 -n -w 640 -h 480 -fps 30 --flush | gst-launch-1.0 -v fdsrc ! h264parse ! rtph264pay config-interval=10 pt=96 ! udpsink host=10.0.0.2 port=5006'
+  $preview_pid = spawn(cmd, out: [LOG, 'a'])
+  Process.detach($preview_pid)
+end
+
+def end_preview
+  Process.kill($preview_pid)
+end
 
 def generate_filename
   "#{Time.now.to_i}.jpg"
@@ -21,8 +34,7 @@ def thumbnail_command(filename, output, width, quality)
 end
 
 def command(cmd, async: true)
-  puts cmd
-  pid = spawn(cmd)
+  pid = spawn(cmd, out: [LOG, 'a'])
   async ? Process.detach(pid) : Process.wait(pid)
 end
 
@@ -33,16 +45,30 @@ def take_photo
   command(thumbnail_command(filename, filename, 2560, 80))
 end
 
-command('timeout 45s raspivid -o - -b 600000 -g 10 -t 0 -n -w 640 -h 480 -fps 30 --flush | gst-launch-1.0 -v fdsrc ! h264parse ! rtph264pay config-interval=10 pt=96 ! udpsink host=10.0.0.2 port=5006')
+puts 'Starting preview stream'
+start_preview
 
+puts 'Playing introduction'
 $serial.write('0')
 sleep(10)
-take_photo
 
+puts 'Taking first photo'
 $serial.write('1')
-sleep(3)
+sleep(5)
 take_photo
+sleep(3)
 
-$serial.write('1')
-sleep(3)
+puts 'Taking second photo'
+$serial.write('2')
+sleep(4)
 take_photo
+sleep(3)
+
+puts 'Taking third photo'
+$serial.write('2')
+sleep(4)
+take_photo
+sleep(5)
+
+puts 'Ending preview stream'
+end_preview

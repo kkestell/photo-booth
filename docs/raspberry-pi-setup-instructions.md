@@ -132,10 +132,11 @@ On the final screen, default options, set Borderless to Yes and click Set Defaul
 $ cd ~/
 $ git clone https://github.com/kkestell/photo-booth.git
 $ cd photo-booth
+$ gem install bundler
 $ bundle install
 ```
 
-## Configure Services
+## Configure Service
 
 ### Server
 
@@ -154,7 +155,7 @@ After=multi-user.target
 
 [Service]
 Type=idle
-ExecStart=/usr/bin/ruby /home/pi/photo-booth/server.rb > /home/pi/photo-booth/logs/server.log 2>&1
+ExecStart=/usr/bin/ruby /home/pi/photo-booth/server.rb > /home/pi/photo-booth/logs/server.log
 
 [Install]
 WantedBy=multi-user.target
@@ -166,47 +167,18 @@ Set permissions:
 $ sudo chmod 644 /lib/systemd/system/photo-booth-server.service
 ```
 
-### Preview Stream
-
-Create a new systemd service:
-
-```
-$ sudo nano /lib/systemd/system/photo-booth-preview-stream.service
-```
-
-And add the following:
-
-```
-[Unit]
-Description=Photo Booth Preview Stream
-After=multi-user.target
-
-[Service]
-Type=idle
-ExecStart=/bin/sh /home/pi/photo-booth/preview.sh > /home/pi/photo-booth/logs/preview.log 2>&1
-
-[Install]
-WantedBy=multi-user.target
-```
-
-Set permissions:
-
-```
-$ sudo chmod 644 /lib/systemd/system/photo-booth-preview-stream.service
-```
-
-### Register, Enable, and Start New Services
+### Register, Enable, and Start Service
 
 ```
 $ sudo systemctl daemon-reload
 $ sudo systemctl enable photo-booth-server
-$ sudo systemctl enable photo-booth-preview-stream
 $ sudo systemctl start photo-booth-server
-$ sudo systemctl start photo-booth-preview-stream
 ```
 
 #### Starting, Stopping, and Restarting Services
 
 ```
-$ sudo systemctl [start|stop|restart] [photo-booth-server|photo-booth-preview-stream]
+$ sudo systemctl start photo-booth-server
+$ sudo systemctl stop photo-booth-server
+$ sudo systemctl restart photo-booth-server
 ```

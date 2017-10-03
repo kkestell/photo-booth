@@ -1,6 +1,7 @@
 require 'json'
 require 'sinatra'
 
+LOG = File.join(File.join(File.dirname(__FILE__), 'logs'), 'photo-booth.log')
 PUBLIC = File.join(File.dirname(__FILE__), 'public')
 PHOTOS = File.join(File.dirname(__FILE__), 'photos')
 
@@ -8,12 +9,12 @@ set :bind, '0.0.0.0'
 
 def command(cmd, async: true)
   puts cmd
-  pid = spawn(cmd)
+  pid = spawn(cmd, out: [LOG, 'a'])
   async ? Process.detach(pid) : Process.wait(pid)
 end
 
 post '/photos' do
-  `/usr/bin/ruby #{File.join(File.dirname(__FILE__), 'capture.rb')}`
+  command("/usr/bin/ruby #{File.join(File.dirname(__FILE__), 'capture.rb')}")
 end
 
 get '/photos' do

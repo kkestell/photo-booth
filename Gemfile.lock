@@ -1,17 +1,17 @@
 GEM
   remote: https://rubygems.org/
   specs:
-    ffi (1.9.18)
-    mustermann (1.0.1)
-    rack (2.0.3)
-    rack-protection (2.0.0)
+    ffi (1.9.25)
+    mustermann (1.0.2)
+    rack (2.0.5)
+    rack-protection (2.0.3)
       rack
-    rubyserial (0.4.0)
+    rubyserial (0.5.0)
       ffi (~> 1.9, >= 1.9.3)
-    sinatra (2.0.0)
+    sinatra (2.0.3)
       mustermann (~> 1.0)
       rack (~> 2.0)
-      rack-protection (= 2.0.0)
+      rack-protection (= 2.0.3)
       tilt (~> 2.0)
     tilt (2.0.8)
 
